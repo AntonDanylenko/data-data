@@ -3,7 +3,7 @@ Source: https://ourworldindata.org/causes-of-death
 Its the causes of death in the world and its organized in many different ways, such as by age, by gender, by risk factors
 
 
-We plan to show an animated changing graph displaying the causes of death over the years similar to the one shown here https://external-preview.redd.it/x1cdV5AkvPOFUAMi1Lar_fQQcpG7VcWhUJvdibJPG0U.gif?format=mp4&s=0f7084a21522f721d9e480efd69683a68e985dba
+We plan to show a graph like https://ourworldindata.org/grapher/total-number-of-deaths-by-cause to represent the causes of death over the years. When the user mouses over the graph at a certain point, an animated changing graph similar to the one shown here https://external-preview.redd.it/x1cdV5AkvPOFUAMi1Lar_fQQcpG7VcWhUJvdibJPG0U.gif?format=mp4&s=0f7084a21522f721d9e480efd69683a68e985dba will be displayed giving a more detailed view of the data for that exact year.
 
 It will be interactive because it will contain a slider that lets the user scrub through the years
 It will also contain extra information on a hover over of each box.
