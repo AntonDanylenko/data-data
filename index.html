@@ -6,18 +6,20 @@
 body {
   font: 11px sans-serif;
 }
+.axis text {
+  font: 10px sans-serif;
+}
 
-.axis path,
-.axis line {
+.axis line,
+.axis path {
   fill: none;
   stroke: #000;
   shape-rendering: crispEdges;
 }
 
-.circle {
-  stroke: #000;
+.axis--x path {
+  display: none;
 }
-
 </style>
 <body>
   <svg class="chart"></svg>

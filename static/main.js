@@ -1,49 +1,70 @@
-var data = [[0.00000126,0.128],
-[0.00000252,0.245],
-[0.00000504,0.43],
-[0.0000104,0.865],
-[0.0000126,1.035]];
 
-var margin = {top: 20, right: 20, bottom: 30, left: 40},
-    width = 900 - margin.left - margin.right,
+var causes = ["wounds", "other", "disease"];
+
+var parseDate = d3.timeFormat("%m/%Y").parse;
+
+var margin = {top: 20, right: 50, bottom: 30, left: 20},
+    width = 960 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 
-var x = d3.scaleLinear()
-                .domain([0, d3.max(data, function(d) { return d[0]; })])
-                .range([ 0, width ]);
+var x = d3.scaleBand()
+    .rangeRound([0, width]);
 
 var y = d3.scaleLinear()
-    	          .domain([0, d3.max(data, function(d) { return d[1]; })])
-    	          .range([ height, 0 ]);
+    .rangeRound([height, 0]);
 
-var svg = d3.select(".chart")
+var z = d3.scaleOrdinal(d3.schemeCategory10);
+
+var xAxis = d3.axisBottom(x)
+    .tickFormat(d3.timeFormat("%b"));
+
+var yAxis = d3.axisLeft(y)
+
+var svg = d3.select("body").append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-var main = svg.append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-    .attr('width', width)
-	  .attr('height', height);
+d3.tsv("deaths.csv", type, function(error, crimea) {
+  if (error) throw error;
 
+  var layers = d3.layout.stack()(causes.map(function(c) {
+    return crimea.map(function(d) {
+      return {x: d.date, y: d[c]};
+    });
+  }));
 
-var xAxis = d3.axisBottom(x);
+  x.domain(layers[0].map(function(d) { return d.x; }));
+  y.domain([0, d3.max(layers[layers.length - 1], function(d) { return d.y0 + d.y; })]).nice();
 
-main.append("g")
-    .attr("transform", "translate(0," + height + ")")
-    .call(xAxis);
+  var layer = svg.selectAll(".layer")
+      .data(layers)
+    .enter().append("g")
+      .attr("class", "layer")
+      .style("fill", function(d, i) { return z(i); });
 
+  layer.selectAll("rect")
+      .data(function(d) { return d; })
+    .enter().append("rect")
+      .attr("x", function(d) { return x(d.x); })
+      .attr("y", function(d) { return y(d.y + d.y0); })
+      .attr("height", function(d) { return y(d.y0) - y(d.y + d.y0); })
+      .attr("width", x.rangeBand() - 1);
 
-var yAxis = d3.axisLeft(y);
+  svg.append("g")
+      .attr("class", "axis axis--x")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis);
 
-main.append("g")
-    .attr('transform', 'translate(0,0)')
-    .call(yAxis);
+  svg.append("g")
+      .attr("class", "axis axis--y")
+      .attr("transform", "translate(" + width + ",0)")
+      .call(yAxis);
+});
 
-var group = main.append("svg:g");
-
-group.selectAll("circles")
-    .data(data)
-  .enter().append("svg:circle")
-    .attr("cx", function (d,i) { return x(d[0]); } )
-    .attr("cy", function (d) { return y(d[1]); } )
-    .attr("r", 3.5);
+function type(d) {
+  d.date = parseDate(d.date);
+  causes.forEach(function(c) { d[c] = +d[c]; });
+  return d;
+}
