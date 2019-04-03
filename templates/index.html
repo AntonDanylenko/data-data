@@ -1,0 +1,66 @@
+<!-- <!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+
+<style>
+body {
+  font: 11px sans-serif;
+}
+.axis text {
+  font: 10px sans-serif;
+}
+
+.axis line,
+.axis path {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.axis--x path {
+  display: none;
+}
+</style>
+<body>
+  <svg width="1500" height="750"></svg>
+<script src="https://d3js.org/d3.v5.min.js"></script>
+<script src="../static/main.js"></script>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>d3.js learning</title>
+  <style type="text/css">
+  svg {
+    font: 10px sans-serif;
+    shape-rendering: crispEdges;
+  }
+
+  .axis path,
+  .axis line {
+    fill: none;
+    stroke: #000;
+  }
+
+  path.domain {
+    stroke: none;
+  }
+
+  .y .tick line {
+    stroke: #ddd;
+  }
+  </style>
+
+</head>
+<body>
+  <div id="stackedbars">
+    <h1>Segments</h1>
+    <svg id="stacked" width="600" height="500"></svg>
+  </div>
+  <script src="https://d3js.org/d3.v5.min.js"></script>
+  <script src="../static/main.js"></script>
+</body>
+</html>

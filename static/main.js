@@ -1,70 +1,92 @@
+var svg = d3.select("#stacked"),
+    margin = {top: 20, right: 180, bottom: 30, left: 40},
+    width = +svg.attr("width") - margin.left - margin.right,
+    height = +svg.attr("height") - margin.top - margin.bottom,
+    g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-var causes = ["wounds", "other", "disease"];
-
-var parseDate = d3.timeFormat("%m/%Y").parse;
-
-var margin = {top: 20, right: 50, bottom: 30, left: 20},
-    width = 960 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
+    // var margin = {top: 20, right: 150, bottom: 50, left: 40},
+    //     width = 600 - margin.left - marginStacked.right,
+    //     height = 500 - margin.top - marginStacked.bottom;
+    //
+    //
+    // var svg = d3.select("#stacked").append("svg")
+    //     .attr("width", widthStacked + marginStacked.left + marginStacked.right)
+    //     .attr("height", heightStacked + marginStacked.top + marginStacked.bottom)
+    //   .append("g")
+    //     .attr("transform", "translate(" + marginStacked.left + "," + marginStacked.top + ")");
 
 var x = d3.scaleBand()
-    .rangeRound([0, width]);
+    .rangeRound([0, width])
+    .padding(0.3)
+    .align(0.3);
 
 var y = d3.scaleLinear()
     .rangeRound([height, 0]);
 
-var z = d3.scaleOrdinal(d3.schemeCategory10);
+var z = d3.scaleOrdinal(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+    // .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
 
-var xAxis = d3.axisBottom(x)
-    .tickFormat(d3.timeFormat("%b"));
+var stack = d3.stack();
 
-var yAxis = d3.axisLeft(y)
+d3.csv("/static/deaths.csv").then(function(data) {
+  data.sort(function(a, b) { return b.total - a.total; });
 
-var svg = d3.select("body").append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-  .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+  x.domain(data.map(function(d) { return d.ethnicity; }));
+  y.domain([0, d3.max(data, function(d) { return d.total; })]).nice();
+  z.domain(data.columns.slice(1));
 
-d3.tsv("deaths.csv", type, function(error, crimea) {
-  if (error) throw error;
-
-  var layers = d3.layout.stack()(causes.map(function(c) {
-    return crimea.map(function(d) {
-      return {x: d.date, y: d[c]};
-    });
-  }));
-
-  x.domain(layers[0].map(function(d) { return d.x; }));
-  y.domain([0, d3.max(layers[layers.length - 1], function(d) { return d.y0 + d.y; })]).nice();
-
-  var layer = svg.selectAll(".layer")
-      .data(layers)
+  g.selectAll(".serie")
+    .data(stack.keys(data.columns.slice(1))(data))
     .enter().append("g")
-      .attr("class", "layer")
-      .style("fill", function(d, i) { return z(i); });
-
-  layer.selectAll("rect")
-      .data(function(d) { return d; })
+      .attr("class", "serie")
+      .attr("fill", function(d) { return z(d.key); })
+    .selectAll("rect")
+    .data(function(d) { return d; })
     .enter().append("rect")
-      .attr("x", function(d) { return x(d.x); })
-      .attr("y", function(d) { return y(d.y + d.y0); })
-      .attr("height", function(d) { return y(d.y0) - y(d.y + d.y0); })
-      .attr("width", x.rangeBand() - 1);
+      .attr("x", function(d) { return x(d.data.ethnicity); })
+      .attr("y", function(d) { return y(d[1]); })
+      .attr("height", function(d) { return y(d[0]) - y(d[1]); })
+      .attr("width", x.bandwidth());
 
-  svg.append("g")
+  g.append("g")
       .attr("class", "axis axis--x")
       .attr("transform", "translate(0," + height + ")")
-      .call(xAxis);
+      .call(d3.axisBottom(x));
 
-  svg.append("g")
+  g.append("g")
       .attr("class", "axis axis--y")
-      .attr("transform", "translate(" + width + ",0)")
-      .call(yAxis);
+      .call(d3.axisLeft(y).ticks(10, "s"))
+    .append("text")
+      .attr("x", 2)
+      .attr("y", y(y.ticks(10).pop()))
+      .attr("dy", "0.35em")
+      .attr("text-anchor", "start")
+      .attr("fill", "#000")
+      .text("Population");
+
+  var legend = g.selectAll(".legend")
+    .data(data.columns.slice(1).reverse())
+    .enter().append("g")
+      .attr("class", "legend")
+      .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; })
+      .style("font", "10px sans-serif");
+
+  legend.append("rect")
+      .attr("x", width + 18)
+      .attr("width", 18)
+      .attr("height", 18)
+      .attr("fill", z);
+
+  legend.append("text")
+      .attr("x", width + 44)
+      .attr("y", 9)
+      .attr("dy", ".35em")
+      .attr("text-anchor", "start")
+      .text(function(d) { return d; });
 });
 
-function type(d) {
-  d.date = parseDate(d.date);
-  causes.forEach(function(c) { d[c] = +d[c]; });
+function type(d, i, columns) {
+  for (i = 1, t = 0; i < columns.length; ++i) t += d[columns[i]] = +d[columns[i]];
+  d.total = t;
   return d;
 }
