@@ -29,11 +29,14 @@ var z = d3.scaleOrdinal(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", 
 var stack = d3.stack();
 
 d3.csv("/static/deaths.csv").then(function(data) {
+  console.log(data);
   data.sort(function(a, b) { return b.total - a.total; });
 
-  x.domain(data.map(function(d) { return d.ethnicity; }));
+  x.domain(data.map(function(d) { return d.Year; }));
   y.domain([0, d3.max(data, function(d) { return d.total; })]).nice();
   z.domain(data.columns.slice(1));
+
+  console.log("cp1");
 
   g.selectAll(".serie")
     .data(stack.keys(data.columns.slice(1))(data))
@@ -43,15 +46,19 @@ d3.csv("/static/deaths.csv").then(function(data) {
     .selectAll("rect")
     .data(function(d) { return d; })
     .enter().append("rect")
-      .attr("x", function(d) { return x(d.data.ethnicity); })
+      .attr("x", function(d) { return x(d.data.Year); })
       .attr("y", function(d) { return y(d[1]); })
       .attr("height", function(d) { return y(d[0]) - y(d[1]); })
       .attr("width", x.bandwidth());
+
+  console.log("cp2");
 
   g.append("g")
       .attr("class", "axis axis--x")
       .attr("transform", "translate(0," + height + ")")
       .call(d3.axisBottom(x));
+
+  console.log("cp3");
 
   g.append("g")
       .attr("class", "axis axis--y")
@@ -63,6 +70,8 @@ d3.csv("/static/deaths.csv").then(function(data) {
       .attr("text-anchor", "start")
       .attr("fill", "#000")
       .text("Population");
+
+  console.log("cp4");
 
   var legend = g.selectAll(".legend")
     .data(data.columns.slice(1).reverse())
