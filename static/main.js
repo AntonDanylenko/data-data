@@ -23,7 +23,7 @@ var x = d3.scaleBand()
 var y = d3.scaleLinear()
     .rangeRound([height, 0]);
 
-var z = d3.scaleOrdinal(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+var z = d3.scaleOrdinal(["#e6194B", "#f58231", "#ffe119", "#bfef45", "#3cb44b", "#42d4f4", "#4363d8", "#911eb4", "#f032e6", "#a9a9a9"]);
     // .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
 
 var stack = d3.stack();
@@ -47,8 +47,11 @@ d3.csv("/static/deaths.csv").then(function(data) {
     .data(function(d) { return d; })
     .enter().append("rect")
       .attr("x", function(d) { return x(d.data.Year); })
-      .attr("y", function(d) { return y(d[1]); })
-      .attr("height", function(d) { return y(d[0]) - y(d[1]); })
+      .attr("y", function(d) {
+        console.log(d);
+        return (d[0]); })
+      .attr("height", function(d) {
+        return (d[1]) - (d[0]); })
       .attr("width", x.bandwidth());
 
   console.log("cp2");
