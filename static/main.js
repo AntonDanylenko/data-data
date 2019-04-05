@@ -50,12 +50,12 @@ d3.csv("/static/deaths.csv").then(function(data) {
       .attr("x", function(d) { return x(d.data.Year); })
       .attr("y", function(d) {
         var val = d[0];
-        return y(val); })
+        return (val); })
       .attr("height", function(d) {
         var val0 = d[0];
         var val1 = d[1];
         console.log(val1-val0);
-        return y((val1) - (val0)); })
+        return ((val1) - (val0)); })
       .attr("width", x.bandwidth());
 
   console.log("cp2");
