@@ -21,7 +21,8 @@ var x = d3.scaleBand()
     .align(0.3);
 
 var y = d3.scaleLinear()
-    .rangeRound([height, 0]);
+    .domain([0,1500])
+    .range([height, 0]);
 
 var z = d3.scaleOrdinal(["#e6194B", "#f58231", "#ffe119", "#bfef45", "#3cb44b", "#42d4f4", "#4363d8", "#911eb4", "#f032e6", "#a9a9a9"]);
     // .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
@@ -48,10 +49,13 @@ d3.csv("/static/deaths.csv").then(function(data) {
     .enter().append("rect")
       .attr("x", function(d) { return x(d.data.Year); })
       .attr("y", function(d) {
-        console.log(d);
-        return (d[0]); })
+        var val = d[0];
+        return y(val); })
       .attr("height", function(d) {
-        return (d[1]) - (d[0]); })
+        var val0 = d[0];
+        var val1 = d[1];
+        console.log(val1-val0);
+        return y((val1) - (val0)); })
       .attr("width", x.bandwidth());
 
   console.log("cp2");
@@ -96,6 +100,24 @@ d3.csv("/static/deaths.csv").then(function(data) {
       .attr("text-anchor", "start")
       .text(function(d) { return d; });
 });
+
+var tooltip = svg.append("g")
+  .attr("class", "tooltip")
+  .style("display", "none");
+
+tooltip.append("rect")
+  .attr("width", 30)
+  .attr("height", 20)
+  .attr("fill", "white")
+  .style("opacity", 0.5);
+
+tooltip.append("text")
+  .attr("x", 15)
+  .attr("dy", "1.2em")
+  .style("text-anchor", "middle")
+  .attr("font-size", "12px")
+  .attr("font-weight", "bold");
+
 
 function type(d, i, columns) {
   for (i = 1, t = 0; i < columns.length; ++i) t += d[columns[i]] = +d[columns[i]];

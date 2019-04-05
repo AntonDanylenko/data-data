@@ -10,7 +10,7 @@ app.secret_key = os.urandom(32)
 
 @app.route('/', methods=['POST','GET'])
 def index():
-    return render_template("index.html") #login page
+    return render_template("test.html") #login page
 
 if __name__ == '__main__':
     app.debug = True
