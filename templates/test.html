@@ -33,7 +33,7 @@
 
 var margin = {top: 20, right: 160, bottom: 35, left: 30};
 
-var width = 960 - margin.left - margin.right,
+var width = 1600 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 
 var svg = d3.select("body")
@@ -83,7 +83,7 @@ d3.csv("/static/deaths.csv", function(error, data) {
   var xAxis = d3.svg.axis()
     .scale(x)
     .orient("bottom")
-    .tickFormat(d3.time.format("%Y"));
+    .tickFormat(d3.time.format("%y"));
 
   svg.append("g")
     .attr("class", "y axis")
