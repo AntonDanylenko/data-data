@@ -100,6 +100,9 @@ d3.csv("/static/deaths.csv", function(error, data) {
     .data(dataset)
     .enter().append("g")
     .attr("class", "cost")
+    //.style("z-index", "-1")
+    .style("position", "absolute")
+    .style("z-index", "-1")
     .style("fill", function(d, i) { return colors[i]; });
 
   var rect = groups.selectAll("rect")
@@ -162,6 +165,7 @@ var parse = d3.time.format("%Y").parse;
 var tooltip = svg.append("g")
   .attr("class", "tooltip")
   .style("display", "none");
+  //.style("z-index", "auto")
 
 tooltip.append("rect")
   .attr("width", 30)
@@ -170,6 +174,8 @@ tooltip.append("rect")
   .style("opacity", 0.5);
 
 tooltip.append("text")
+  .style("position", "absolute")
+  .style("z-index", "1")
   .attr("x", 15)
   .attr("dy", "1.2em")
   .style("text-anchor", "middle")

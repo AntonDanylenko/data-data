@@ -1,0 +1,4 @@
+upon demo:
+
+- graph should be split into intervals (lines look super chaotic right now)
+- formatting/style i.e. population is nowhere
