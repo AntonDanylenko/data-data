@@ -27,8 +27,8 @@
   height = +svg.attr("height") - margin.top - margin.bottom,
   g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-  var w = 300 - margin.left - margin.right,
-      h = 200 - margin.top - margin.bottom;
+  var w = 300 + margin.left + margin.right,
+      h = 200 + margin.top + margin.bottom;
 
   var r = Math.min(w, h) / 2
 
@@ -91,23 +91,24 @@
          //   return dictionary[key];
          // });
 
-         var svg2 = d3.select("#pie")
+         var svg2 = d3.select("#bar")
            .append("svg")
            .attr("width", w)
            .attr("height", h)
-           .append("f")
-           .attr("transform", "translate(" + w / 2 + "," + h / 2 + ")");
+           .append("g")
+           .attr("transform", function(d, i) { return "translate(500," + 700 + ")"; });
 
-           var f = svg.selectAll(".arc")
+
+           var g = svg.selectAll(".arc")
             .data(pie([10,20,30])) //test data
-            .enter().append("f")
+            .enter().append("g")
             .attr("class", "arc");
 
-          f.append("path")
+          g.append("path")
             .attr("d", arc)
             .style("fill", function(d) { return z(d.data); });
 
-          f.append("text")
+          g.append("text")
             .attr("transform", function(d) { return "translate(" + labelArc.centroid(d) + ")"; })
             .attr("dy", ".35em")
             .text(function(d) { return d.data; });
